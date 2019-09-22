@@ -8,6 +8,8 @@ import com.template.dto.PaySellerDTO;
 import com.template.dto.RequestForFundsDTO;
 import com.template.flows.CreateInvoiceFlow;
 import com.template.flows.RequestForFundsFlow;
+import com.template.flows.SendPaymentConfirmationToBuyerFlow;
+import com.template.flows.SendPaymentConfirmationToSellerFlow;
 import com.template.model.InvoiceProperties;
 import net.corda.core.contracts.Amount;
 import net.corda.core.contracts.UniqueIdentifier;
@@ -35,9 +37,9 @@ public class Controller {
         this.proxy = rpc.proxy;
     }
 
-    @PostMapping(value = "/create-invoice", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/create-invoice", consumes = "application/json", produces = "application/text")
     private ResponseEntity createInvoice(@RequestBody  CreateInvoiceDTO invoiceDTO) {
-
+        String stx = "";
         try {
             LocalDate invoiceDate = LocalDate.parse(invoiceDTO.invoiceDate);
             LocalDate payDate = LocalDate.parse(invoiceDTO.payDate);
@@ -46,55 +48,59 @@ public class Controller {
             System.out.println("shdosahd" + myIdentity.toString());
             Party regulator = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Regulator,L=New York,C=US"));
             InvoiceProperties invoiceProperties = new InvoiceProperties(invoiceDTO.invoiceId, invoiceDate, Long.parseLong(invoiceDTO.term), payDate, invoiceDTO.itemsList, new Amount(Long.parseLong(invoiceDTO.amount), Currency.getInstance("GBP")));
-            String stx = proxy.startFlowDynamic(CreateInvoiceFlow.Initiator.class, myIdentity, buyer, invoiceProperties, regulator).getReturnValue().get();
+            stx = proxy.startFlowDynamic(CreateInvoiceFlow.Initiator.class, myIdentity, buyer, invoiceProperties, regulator).getReturnValue().get();
             System.out.println("transaction id" + stx);
         }catch (Exception ex) {
             System.out.println("Caught exception" +ex);
         }
-        return  ResponseEntity.ok().body("{\"result\":123}");
+        return  ResponseEntity.ok().body(stx);
     }
 
-    @PostMapping(value = "/request-funds", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/request-funds", consumes = "application/json", produces = "application/text")
     private ResponseEntity requestFunds(@RequestBody RequestForFundsDTO requestForFundsDTO) {
         String linearId = requestForFundsDTO.getLinearId();
         String bank = requestForFundsDTO.getBank();
+        String txID = "";
         try {
             Party bankNode = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse(bank));
             Party regulator = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Regulator,L=New York,C=US"));
             SignedTransaction stx = proxy.startFlowDynamic(RequestForFundsFlow.Initiator.class, UniqueIdentifier.Companion.fromString(linearId), bankNode, regulator).getReturnValue().get();
+            txID = stx.getId().toString();
             System.out.println("transaction id" + stx.getId());
         }catch (Exception ex) {
             System.out.println("Caught exception" +ex);
         }
-        return  ResponseEntity.ok().body("{\"result\":123}");
+        return  ResponseEntity.ok().body(txID);
     }
 
-    @PostMapping(value = "/pay-buyer", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/pay-buyer", consumes = "application/json", produces = "application/text")
     private ResponseEntity payBuyer(@RequestBody PayBuyerDTO payBuyerDTO) {
         String linearId = payBuyerDTO.getLinearId();
         String offlinePaymentId = payBuyerDTO.getOfflinePaymentId();
+        String stx = "";
         try {
             Party regulator = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Regulator,L=New York,C=US"));
-            SignedTransaction stx = proxy.startFlowDynamic(RequestForFundsFlow.Initiator.class, UniqueIdentifier.Companion.fromString(linearId), regulator, offlinePaymentId).getReturnValue().get();
-            System.out.println("transaction id" + stx.getId());
+            stx = proxy.startFlowDynamic(SendPaymentConfirmationToBuyerFlow.Initiator.class, UniqueIdentifier.Companion.fromString(linearId), regulator, offlinePaymentId).getReturnValue().get();
+            System.out.println("transaction id" + stx);
         }catch (Exception ex) {
             System.out.println("Caught exception" +ex);
         }
-        return  ResponseEntity.ok().body("{\"result\":123}");
+        return  ResponseEntity.ok().body(stx);
     }
 
-    @PostMapping(value = "/pay-seller", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/pay-seller", consumes = "application/json", produces = "application/text")
     private ResponseEntity paySeller(@RequestBody PaySellerDTO paySellerDTO) {
         String linearId = paySellerDTO.getLinearId();
         String seller = paySellerDTO.getSeller();
         String offlinePaymentId = paySellerDTO.getOfflinePaymentId();
+        String stx = "";
         try {
             Party regulator = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Regulator,L=New York,C=US"));
-            SignedTransaction stx = proxy.startFlowDynamic(RequestForFundsFlow.Initiator.class, UniqueIdentifier.Companion.fromString(linearId), regulator, offlinePaymentId).getReturnValue().get();
-            System.out.println("transaction id" + stx.getId());
+            stx = proxy.startFlowDynamic(SendPaymentConfirmationToSellerFlow.Initiator.class, UniqueIdentifier.Companion.fromString(linearId), regulator, offlinePaymentId, seller).getReturnValue().get().getId().toString();
+            System.out.println("transaction id" + stx);
         }catch (Exception ex) {
             System.out.println("Caught exception" +ex);
         }
-        return  ResponseEntity.ok().body("{\"result\":123}");
+        return  ResponseEntity.ok().body(stx);
     }
 }

@@ -28,7 +28,7 @@ public class SendPaymentConfirmationToBuyerFlow {
     @InitiatingFlow
     @StartableByRPC
 
-    public static class Initiator extends FlowLogic<SignedTransaction> {
+    public static class Initiator extends FlowLogic<String> {
 
         private final UniqueIdentifier invoiceLinearId;
         private final String offlinePaymentReferenceId;
@@ -67,7 +67,7 @@ public class SendPaymentConfirmationToBuyerFlow {
 
         @Suspendable
         @Override
-        public SignedTransaction call() throws FlowException {
+        public String call() throws FlowException {
             // Initiator flow logic goes here.
 
             // Step 1. Initialisation.
@@ -98,7 +98,7 @@ public class SendPaymentConfirmationToBuyerFlow {
             progressTracker.setCurrentStep(FINALISING);
             SignedTransaction finalTx = subFlow(new FinalityFlow(stx, ImmutableSet.of(buyerSession), FINALISING.childProgressTracker()));
             subFlow(new ReportTransactionsToObserverFlows.ReportToObserver(finalTx, regulator));
-            return finalTx;
+            return paymentConfirmationState.getLinearId().toString();
         }
 
         StateAndRef<InvoiceState> getInvoiceByLinearId(UniqueIdentifier linearId) throws FlowException {
