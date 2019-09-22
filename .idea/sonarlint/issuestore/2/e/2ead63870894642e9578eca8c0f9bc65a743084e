@@ -1,0 +1,8 @@
+
+Qsquid:S1118":Add a private constructor to hide the implicit public one.(‡ç‘á
+tsquid:S00116,"WRename this field "INITIALISING" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñ¡ç¤ûÿÿÿÿ
+asquid:UselessImportCheck"=Remove this unused import 'com.template.states.InvoiceState'.(ÈˆôÜ
+ksquid:S00116-"SRename this field "BUILDING" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(öö—Ð
+msquid:S001165"URename this field "FINALISING" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‡Çò†
+msquid:S00116/"URename this field "COLLECTING" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ìñ±´
+osquid:S00116."RRename this field "SIGNING" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Æ”ö¥üÿÿÿÿ

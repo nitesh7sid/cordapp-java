@@ -1,0 +1,10 @@
+
+ˆ"squid:ClassVariableVisibilityCheck"SMake payDate a static final constant or non-public and provide accessors if needed.(ûÜ ú8ä¿ÙôÔ-
+psquid:UselessImportCheck"ERemove this unused import 'org.hibernate.internal.build.AllowSysOut'.(ò…ÔÚ8íõêôÔ-
+]squid:S1118":Add a private constructor to hide the implicit public one.(•¿  øÿÿÿÿ8ÜèäôÔ-
+…"squid:ClassVariableVisibilityCheck"PMake term a static final constant or non-public and provide accessors if needed.(×øŸÌ8ä¿ÙôÔ-
+"squid:ClassVariableVisibilityCheck
+"UMake invoiceId a static final constant or non-public and provide accessors if needed.(”Ø†Ïûÿÿÿÿ8ä¿ÙôÔ-
+‡"squid:ClassVariableVisibilityCheck"RMake amount a static final constant or non-public and provide accessors if needed.(±±õÏ8§¢İôÔ-
+‘"squid:ClassVariableVisibilityCheck"WMake invoiceDate a static final constant or non-public and provide accessors if needed.(Û©«‰ûÿÿÿÿ8ä¿ÙôÔ-
+"squid:ClassVariableVisibilityCheck"UMake itemsList a static final constant or non-public and provide accessors if needed.(×åäïúÿÿÿÿ8ÊÿßôÔ-
